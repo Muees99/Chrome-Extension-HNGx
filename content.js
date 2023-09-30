@@ -5,6 +5,7 @@ function onAccessApproved(stream){
     recorder = new MediaRecorder(stream);
 
     recorder.start();
+    
 
     recorder.onstop = function(){
         stream.getTracks().forEach(function(track){

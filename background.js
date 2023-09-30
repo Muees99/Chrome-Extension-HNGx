@@ -5,6 +5,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab)=>{
             files: ["./content.js"]
         }).then(()=>{
             console.log("we have injected the content script")
-        }).catch(err=> console.log(err, "error in background script line 10"))
+        }).catch(err=> console.log(err, "Ooops"))
     }
 })
