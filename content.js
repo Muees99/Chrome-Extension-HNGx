@@ -10,17 +10,27 @@ function onAccessApproved(stream) {
     let audioChunks = [];
     console.log("videoChunks:", videoChunks);
     recorder.start(1000);
+    fetch('https://chrome-extenion.onrender.com/api/video/start',{method:"POST"})
     recorder.onstop = function () {
         stream.getTracks().forEach(function (track) {
             if (track.readyState === "live") {
                 track.stop()
+                console.log("My Backend is patient")
+                fetch('https://chrome-extenion.onrender.com/api/video/upload', {
+                    method: 'POST',
+                    // body: formData
+                  })
+                  .then(response => response.json())
+                  .then(data => {
+                    console.log('Chunk sent successfully:', data);
+                  })
             }
         })
     }
     recorder.ondataavailable = function (event) {
         if (event.data.size > 0) {
             console.log("inside event size");
-            if (event.data.type === 'video/x-matroska;codecs=avc1') {
+            if (event.data.type === 'video/webm;codecs=vp8') {
                 // 'video/webm;codecs=vp8'
                 console.log("inside type condition")
                 videoChunks.push(event.data);
@@ -37,6 +47,7 @@ function onAccessApproved(stream) {
         // sendChunkToBackend(recordedBlob);
         console.log("recordedBlob has been assigned")
         console.log(recordedBlob)
+        sendChunkToBackend(recordedBlob)
         // if (recordedBlob.type === 'video/webm') {
         //     console.log("inside recorder if condition");
         //     videoChunks.push(recordedBlob);
@@ -59,7 +70,7 @@ function onAccessApproved(stream) {
 function sendChunkToBackend(blob) {
     const formData = new FormData();
     formData.append('file', blob, 'screen-recording.webm');
-    fetch('https://example.com/upload', {
+    fetch('https://chrome-extenion.onrender.com/api/video/save', {
       method: 'POST',
       body: formData
     })
@@ -89,7 +100,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         console.log("stopping video");
         sendResponse(`processed: ${message.action}`);
         if (!recorder) return console.log("no recorder")
-        recorder.stop();
+        recorder.stop()
+        console("My backend don't play");
+        // const formData = new FormData();
+        fetch('https://chrome-extenion.onrender.com/api/video/upload', {
+            method: 'POST',
+            // body: formData
+          })
+          .then(response => response.json())
+          .then(data => {
+            console.log('Chunk sent successfully:', data);
+          })
     }
 })
 
