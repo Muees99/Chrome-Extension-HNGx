@@ -30,7 +30,7 @@ function onAccessApproved(stream) {
     recorder.ondataavailable = function (event) {
         if (event.data.size > 0) {
             console.log("inside event size");
-            if (event.data.type === 'video/webm;codecs=vp8') {
+            if (event.data.type === 'video/x-matroska;codecs=avc1,opus') {
                 // 'video/webm;codecs=vp8'
                 console.log("inside type condition")
                 videoChunks.push(event.data);
